@@ -18,25 +18,24 @@ app.get('/movies', (req, res) => {
 })
 
 app.get('/movies/:id', (req, res) => {
-    let id = req.body.id
+    let id = +req.params.id
     function isIdMatch(movie) {
         return movie.movieId === id
     }
-    let movie = movies.filter(isIdMatch)
-    res.status(200).send(movie)
+    let index = movies.findIndex(isIdMatch)
+
+    if (isNaN(id)) {
+        res.status(400).send()
+        return
+    }
+
+    if (index > -1) {
+        res.status(200).send(movies[index])
+    } else {
+        res.status(404).send()
+    }
 })
 
 
 //app.post()
 module.exports = app;
-
-// let id = req.params.id
-// let index = +id-1
-// let author = authors[index]
-// if (isNaN(index)){
-//   res.status(400).send()
-// }
-// if (author){
-//   res.status(200).json(author)
-// } else {
-//   res.status(404).send();

@@ -8,22 +8,35 @@ describe('getting all movies from /movies', () => {
             .get('/movies')
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect((res) => res.body.includes(
-                { movieId: 1, title: "Guardians of the Galaxy Vol. 2", released: "05 May 2017", director: "James Gunn" }
-            ))
+            .expect((res) => {
+                if (!res.body.length > 0) throw new Error(`Didn't receive list of movies`)
+            })
             .expect(res => res.body.length > 0)
             .end(done)
     })
 
     it('get a movie by an ID', (done) => {
+        let id = 1
         request(app)
-            .get('/movies/1')
+            .get(`/movies/${id}`)
             .expect(200)
-            .expect((res) => res.body.includes(
-                { movieId: 1, title: "Guardians of the Galaxy Vol. 2", released: "05 May 2017", director: "James Gunn" }
-            ))
+            .expect(res => { if (res.body.movieId !== id) throw new Error(`Didn't receive json with 'id' ${id}`) })
             .end(done)
     });
 
+
+    it('returns a 404 if movie isnt found', (done) => {
+        request(app)
+            .get('/movies/1000000088888')
+            .expect(404)
+            .end(done)
+    })
+
+    it('it returns a 400 if invalid ID supplied', (done) => {
+        request(app)
+            .get('/movies/dfjvhdfhvdv')
+            .expect(400)
+            .end(done)
+    })
 
 });
