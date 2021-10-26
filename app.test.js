@@ -3,7 +3,7 @@ const request = require('supertest');
 const movies = require('./movies.json');
 
 
-describe('getting all movies from /movies', () => {
+describe('/movies', () => {
     it('returns a list of all our movies from movies.json', (done) => {
         request(app)
             .get('/movies')
@@ -13,30 +13,6 @@ describe('getting all movies from /movies', () => {
                 if (!res.body.length > 0) throw new Error(`Didn't receive list of movies`)
             })
             .expect(res => res.body.length > 0)
-            .end(done)
-    })
-
-    it('get a movie by an ID', (done) => {
-        let id = 1
-        request(app)
-            .get(`/movies/${id}`)
-            .expect(200)
-            .expect(res => { if (res.body.movieId !== id) throw new Error(`Didn't receive json with 'id' ${id}`) })
-            .end(done)
-    });
-
-
-    it('returns a 404 if movie isnt found', (done) => {
-        request(app)
-            .get('/movies/1000000088888')
-            .expect(404)
-            .end(done)
-    })
-
-    it('it returns a 400 if invalid ID supplied', (done) => {
-        request(app)
-            .get('/movies/dfjvhdfhvdv')
-            .expect(400)
             .end(done)
     })
 
@@ -56,6 +32,31 @@ describe('getting all movies from /movies', () => {
             .expect(201, movies[10])
             .end(done)
     });
+});
+
+describe('/movies/:id', () => {
+    it('get a movie by an ID', (done) => {
+        let id = 1
+        request(app)
+            .get(`/movies/${id}`)
+            .expect(200)
+            .expect(res => { if (res.body.movieId !== id) throw new Error(`Didn't receive json with 'id' ${id}`) })
+            .end(done)
+    });
+
+    it('returns a 404 if movie isnt found', (done) => {
+        request(app)
+            .get('/movies/1000000088888')
+            .expect(404)
+            .end(done)
+    })
+
+    it('it returns a 400 if invalid ID supplied', (done) => {
+        request(app)
+            .get('/movies/dfjvhdfhvdv')
+            .expect(400)
+            .end(done)
+    })
 
     it('DELETES a movie at /movies/:id', (done) => {
         request(app)
@@ -67,4 +68,25 @@ describe('getting all movies from /movies', () => {
             .expect(404)
             .end(done)
     });
+});
+
+describe('EATS THE COOKIES', () => {
+    it('sets the cookie', async () => {
+        let firstName = "Aaron"
+        let lastName = "Gettemy"
+
+        let server = request.agent(app)
+
+        await server
+            .post(`/setCookie`)
+            .send({ firstName, lastName })
+            .expect(200)
+            .expect(`Cookies have been set: ${firstName} ${lastName}`)
+            .expect('set-cookie', `firstName=${firstName}; Path=/,lastName=${lastName}; Path=/`)
+
+        await server
+            .get('/readCookie')
+            .expect(200)
+            .expect(`Your name is ${firstName} ${lastName}`)
+    })
 });

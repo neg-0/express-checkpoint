@@ -2,9 +2,11 @@ const express = require('express')
 const app = express();
 const movies = require('./movies.json')
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser')
 
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 
 
@@ -67,6 +69,20 @@ app.delete("/movies/:id", (req, res) => {
     movies.splice(index, 1)
 
     res.status(200).send(`Deleted movie ${id}`)
+})
+
+app.post('/setCookie', (req, res) => {
+    let firstName = req.body.firstName
+    let lastName = req.body.lastName
+
+    res.cookie("firstName", firstName)
+    res.cookie("lastName", lastName)
+
+    res.status(200).send(`Cookies have been set: ${firstName} ${lastName}`)
+})
+
+app.get('/readCookie', (req, res) => {
+    res.status(200).send(`Your name is ${req.cookies.firstName} ${req.cookies.lastName}`)
 })
 
 module.exports = app;
