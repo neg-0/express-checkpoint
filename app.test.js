@@ -1,5 +1,6 @@
 const app = require('./app');
 const request = require('supertest');
+const movies = require('./movies.json');
 
 
 describe('getting all movies from /movies', () => {
@@ -39,4 +40,31 @@ describe('getting all movies from /movies', () => {
             .end(done)
     })
 
+    it('returns movie by movie title', (done) => {
+        let title = "Star Trek"
+        request(app)
+            .get(`/movies?title=${title}`)
+            .expect(200)
+            .expect(res => expect(res.body.title).toEqual(title))
+            .end(done)
+    })
+
+    it('POSTS a movie at /movies. it sends a 201 status and the movie that was posted', (done) => {
+        request(app)
+            .post("/movies")
+            .send(movies[10])
+            .expect(201, movies[10])
+            .end(done)
+    });
+
+    it('DELETES a movie at /movies/:id', (done) => {
+        request(app)
+            .delete("/movies/1")
+            .expect(200)
+            .end(done)
+        request(app)
+            .get("/movies/1")
+            .expect(404)
+            .end(done)
+    });
 });
