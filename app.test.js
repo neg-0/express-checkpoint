@@ -71,22 +71,32 @@ describe('/movies/:id', () => {
 });
 
 describe('EATS THE COOKIES', () => {
-    it('sets the cookie', async () => {
+
+    let agent
+
+    beforeAll(() => {
+        agent = request.agent(app)
+    })
+
+    it('sets the cookie', (done) => {
         let firstName = "Aaron"
         let lastName = "Gettemy"
 
-        let server = request.agent(app)
-
-        await server
+        agent
             .post(`/setCookie`)
             .send({ firstName, lastName })
             .expect(200)
             .expect(`Cookies have been set: ${firstName} ${lastName}`)
-            .expect('set-cookie', `firstName=${firstName}; Path=/,lastName=${lastName}; Path=/`)
+            .expect('set-cookie', `firstName=${firstName}; Path=/,lastName=${lastName}; Path=/`, done)
+    })
 
-        await server
+    it('sets the cookie', (done) => {
+        let firstName = "Aaron"
+        let lastName = "Gettemy"
+
+        agent
             .get('/readCookie')
             .expect(200)
-            .expect(`Your name is ${firstName} ${lastName}`)
+            .expect(`Your name is ${firstName} ${lastName}`, done)
     })
 });
