@@ -10,9 +10,8 @@ describe('/movies', () => {
             .expect(200)
             .expect('Content-Type', /json/)
             .expect((res) => {
-                if (!res.body.length > 0) throw new Error(`Didn't receive list of movies`)
+                if (res.body.length !== movies.length) throw new Error(`Didn't receive list of movies`)
             })
-            .expect(res => res.body.length > 0)
             .end(done)
     })
 
