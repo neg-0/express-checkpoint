@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(express.urlencoded({ extended: true }))
 
 
 app.get('/', (req, res) => {
@@ -27,10 +28,7 @@ app.get('/movies', (req, res) => {
 
 app.get('/movies/:id', (req, res) => {
     let id = +req.params.id
-    function isIdMatch(movie) {
-        return movie.movieId === id
-    }
-    let index = movies.findIndex(isIdMatch)
+    let index = movies.findIndex(movie => parseInt(movie.movieId) === id)
 
     if (isNaN(id)) {
         res.status(400).send()
